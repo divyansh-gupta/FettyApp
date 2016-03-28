@@ -7,8 +7,20 @@ import android.content.Context;
  */
 public class FettyNoise implements Playable {
 
+    private String mp3Name;
+
+    public FettyNoise(String mp3Name) {
+        this.mp3Name = mp3Name;
+    }
+
     public String getRawResourcePath(Context context) {
-        return null;
+        String path = "android.resource://" + context.getPackageName()
+                + "/raw/" + this.mp3Name();
+        return path;
+    }
+
+    public String mp3Name() {
+        return this.mp3Name;
     }
 
 }
