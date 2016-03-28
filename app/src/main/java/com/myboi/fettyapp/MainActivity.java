@@ -13,11 +13,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    MusicPlayer player = new MusicPlayer(this);
+    private String[] allSongs = { "aye", "seventeen", "squaw" };
+    private MusicPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,15 +46,26 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        player = new MusicPlayer(this);
+        this.addAllSoundButtons();
+    }
 
-        Button fettyButton = (Button) findViewById(R.id.fettyButton);
-        fettyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FettyNoise fettyNoise = new FettyNoise("aye.mp3");
-                player.findAndPlaySong(fettyNoise);
-            }
-        });
+    private void addAllSoundButtons() {
+        LinearLayout rL = (LinearLayout) findViewById(R.id.programLayout);
+        int counter = 1;
+        for (final String name : this.allSongs) {
+            Button fettyButton = (Button) View.inflate(this.getApplication(), R.layout.sound_buttons, null);
+            fettyButton.setId(counter++);
+            fettyButton.setText(name);
+            fettyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FettyNoise fettyNoise = new FettyNoise(name);
+                    player.findAndPlaySong(fettyNoise);
+                }
+            });
+            rL.addView(fettyButton);
+        }
     }
 
     @Override
