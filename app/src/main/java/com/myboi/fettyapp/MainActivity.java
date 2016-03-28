@@ -19,7 +19,6 @@ import android.widget.RelativeLayout;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private String[] allSongs = { "aye", "seventeen", "squaw" };
     private MusicPlayer player;
 
     @Override
@@ -52,10 +51,9 @@ public class MainActivity extends AppCompatActivity
 
     private void addAllSoundButtons() {
         LinearLayout rL = (LinearLayout) findViewById(R.id.programLayout);
-        int counter = 1;
-        for (final String name : this.allSongs) {
+        String[] allSongs = getResources().getStringArray(R.array.fettyNoises);
+        for (final String name : allSongs) {
             Button fettyButton = (Button) View.inflate(this.getApplication(), R.layout.sound_buttons, null);
-            fettyButton.setId(counter++);
             fettyButton.setText(name);
             fettyButton.setOnClickListener(new View.OnClickListener() {
                 @Override
