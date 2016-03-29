@@ -41,3 +41,6 @@ proguard/
 
 # Android Studio captures folder
 captures/
+
+# Private files
+*private_values.xml

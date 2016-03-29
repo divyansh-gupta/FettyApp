@@ -1,0 +1,4 @@
+<resources>
+    <string name="facebook_app_id">FB_APP_ID</string>
+    <string name="firebase_app_url">FIREBASE_URL</string>
+</resources>
