@@ -6,6 +6,10 @@
 /.idea/gradle.xml
 /.idea/misc.xml
 /.idea/encodings.xml
+/.idea/compiler.xml
+/.idea/modules.xml
+/.idea/runConfigurations.xml
+/.idea/vcs.xml
 .DS_Store
 /build
 /captures
