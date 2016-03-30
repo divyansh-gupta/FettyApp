@@ -1,5 +1,6 @@
 package com.myboi.fettyapp;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,27 +17,35 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.facebook.FacebookSdk;
+import com.facebook.messenger.ShareToMessengerParams;
+import com.facebook.messenger.MessengerUtils;
+import com.facebook.messenger.MessengerThreadParams;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private MusicPlayer player;
+    String mimeType = "audio/mpeg";
+    private View messageButton;
+    private static final int REQUEST_CODE_SHARE_TO_MESSENGER = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        messageButton = findViewById(R.id.sendTest);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -48,6 +57,13 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         player = new MusicPlayer(this);
         this.addAllSoundButtons();
+
+        messageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                messageButtonClicked();
+            }
+        });
     }
 
     private void addAllSoundButtons() {
@@ -55,6 +71,7 @@ public class MainActivity extends AppCompatActivity
         String[] allSongs = getResources().getStringArray(R.array.fettyNoises);
         for (final String name : allSongs) {
             Button fettyButton = (Button) View.inflate(this.getApplication(), R.layout.sound_buttons, null);
+
             fettyButton.setText(name);
             fettyButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -65,6 +82,21 @@ public class MainActivity extends AppCompatActivity
             });
             rL.addView(fettyButton);
         }
+
+
+
+    }
+
+    private void messageButtonClicked(){
+        Uri uri = Uri.parse("android.resource://com.myboi.fettyapp/" + R.raw.aye);
+        ShareToMessengerParams shareToMessengerParams =
+                ShareToMessengerParams.newBuilder(uri, mimeType)
+                        .build();
+
+        MessengerUtils.shareToMessenger(
+                this,
+                REQUEST_CODE_SHARE_TO_MESSENGER,
+                shareToMessengerParams);
     }
 
     @Override
