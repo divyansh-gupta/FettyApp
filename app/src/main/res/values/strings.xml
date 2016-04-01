@@ -6,7 +6,8 @@
 
 
     <string-array name="fettyNoises">
-        <item>aye</item>
+        <item>aye_short</item>
+        <item>aye_long</item>
         <item>seventeen</item>
         <item>squaw</item>
     </string-array>
