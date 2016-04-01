@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.messenger.ShareToMessengerParams;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.MessengerThreadParams;
@@ -31,7 +32,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         FacebookSdk.sdkInitialize(getApplicationContext());
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -86,9 +89,13 @@ public class MainActivity extends AppCompatActivity
 
 
     }
+    private String getPathOfSong(String name){
+        String path = "android.resource://"+this.getPackageName()+"/raw/"+name;
+        return path;
 
+    }
     private void messageButtonClicked(){
-        Uri uri = Uri.parse("android.resource://com.myboi.fettyapp/" + R.raw.aye);
+        Uri uri = Uri.parse("android.resource://com.myboi.fettyapp/" + R.raw.aye_short);
         ShareToMessengerParams shareToMessengerParams =
                 ShareToMessengerParams.newBuilder(uri, mimeType)
                         .build();
@@ -154,5 +161,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Logs 'install' and 'app activate' App Events.
+        AppEventsLogger.activateApp(this);
     }
 }
