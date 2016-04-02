@@ -35,13 +35,6 @@
             android:layout_below="@+id/textView2"
             android:layout_alignParentEnd="false"
             android:weightSum="1">
-
-            <include
-                layout="@layout/messenger_button_send_blue_large"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/sendTest"
-                android:layout_gravity="right" />
         </LinearLayout>
 
 </RelativeLayout>
