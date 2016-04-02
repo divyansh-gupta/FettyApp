@@ -1,5 +1,6 @@
 package com.myboi.fettyapp;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,31 +13,31 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.widget.ToggleButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.messenger.ShareToMessengerParams;
+import com.facebook.messenger.MessengerUtils;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String MIME_TYPE = "audio/mpeg";
+    private static final int REQUEST_CODE_SHARE_TO_MESSENGER = 1;
+
+    private ToggleButtonGroup soundButtons;
     private MusicPlayer player;
+    private Snackbar bar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -46,25 +47,64 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        player = new MusicPlayer(this);
+
         this.addAllSoundButtons();
+        this.setupSendingFunctionality();
     }
 
     private void addAllSoundButtons() {
+        player = new MusicPlayer(this);
+        soundButtons = new ToggleButtonGroup();
         LinearLayout rL = (LinearLayout) findViewById(R.id.programLayout);
         String[] allSongs = getResources().getStringArray(R.array.fettyNoises);
         for (final String name : allSongs) {
-            Button fettyButton = (Button) View.inflate(this.getApplication(), R.layout.sound_buttons, null);
+            ToggleButton fettyButton = (ToggleButton) View.inflate(this.getApplication(), R.layout.sound_buttons, null);
             fettyButton.setText(name);
-            fettyButton.setOnClickListener(new View.OnClickListener() {
+            fettyButton.setTextOn(name);
+            fettyButton.setTextOff(name);
+            fettyButton.setOnClickListener(new CompositeOnClickListener(soundButtons.add(fettyButton), new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FettyNoise fettyNoise = new FettyNoise(name);
-                    player.findAndPlaySong(fettyNoise);
+                    if (bar != null && bar.isShownOrQueued()) {
+                        messageButtonClicked( ((ToggleButton) v).getText().toString());
+                        return;
+                    }
+                    if (!player.isPlaying()) {
+                        player.findAndPlaySong(fettyNoise);
+                    }
                 }
-            });
+            }));
             rL.addView(fettyButton);
         }
+    }
+
+    private void setupSendingFunctionality() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        assert fab != null;
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (soundButtons.getCheckedButton() == null) {
+                    bar = Snackbar.make(view, "Select a beat to send!", Snackbar.LENGTH_INDEFINITE);
+                    bar.setAction("Action", null).show();
+                    return;
+                }
+                messageButtonClicked(soundButtons.getCheckedButton().getText().toString());
+            }
+        });
+    }
+
+    private void messageButtonClicked(String fettyNoise) {
+        Uri uri = Uri.parse("android.resource://" + this.getPackageName() + "/raw/" + fettyNoise);
+        ShareToMessengerParams shareToMessengerParams =
+                ShareToMessengerParams.newBuilder(uri, MIME_TYPE)
+                        .build();
+        if (bar != null) bar.dismiss();
+        MessengerUtils.shareToMessenger(
+                this,
+                REQUEST_CODE_SHARE_TO_MESSENGER,
+                shareToMessengerParams);
     }
 
     @Override
@@ -122,5 +162,13 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Logs 'install' and 'app activate' App Events.
+        AppEventsLogger.activateApp(this);
     }
 }

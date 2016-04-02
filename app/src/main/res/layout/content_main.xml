@@ -17,13 +17,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Bruh...pick a beat."
-        android:id="@+id/textView2" />
+        android:id="@+id/textView2"
+        android:layout_alignParentTop="true"
+        android:height="26dp"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:typeface="normal"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:textAlignment="center" />
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/programLayout">
+            android:id="@+id/programLayout"
+            android:layout_below="@+id/textView2"
+            android:layout_alignParentEnd="false"
+            android:weightSum="1">
         </LinearLayout>
 
 </RelativeLayout>

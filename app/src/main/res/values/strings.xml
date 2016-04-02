@@ -4,8 +4,10 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
 
+
     <string-array name="fettyNoises">
-        <item>aye</item>
+        <item>aye_short</item>
+        <item>aye_long</item>
         <item>seventeen</item>
         <item>squaw</item>
     </string-array>
