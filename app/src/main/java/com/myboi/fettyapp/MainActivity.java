@@ -1,41 +1,55 @@
 package com.myboi.fettyapp;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ToggleButton;
+import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ToggleButton;
+
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.facebook.messenger.ShareToMessengerParams;
 import com.facebook.messenger.MessengerUtils;
+import com.facebook.messenger.ShareToMessengerParams;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.gcm.GoogleCloudMessaging;
+import com.google.android.gms.iid.InstanceID;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String MIME_TYPE = "audio/mpeg";
     private static final int REQUEST_CODE_SHARE_TO_MESSENGER = 1;
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private static final String TAG = "MainActivity";
+    String PROJECT_NUMER = "";
 
     private ToggleButtonGroup soundButtons;
     private MusicPlayer player;
     private Snackbar bar;
+    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        PROJECT_NUMER = getResources().getString(R.string.gcm_sender_id);
         FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -47,6 +61,21 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        GCMClientManager pushClientManager  = new GCMClientManager(this, PROJECT_NUMER);
+        pushClientManager.registerIfNeeded(new GCMClientManager.RegistrationCompletedHandler(){
+            @Override
+            public void onSuccess(String registratoinId, boolean isNewRegistration) {
+                Log.d("RegId", registratoinId);
+            }
+
+            @Override
+            public void onFailure(String ex){
+                super.onFailure(ex);
+            }
+
+        });
 
         this.addAllSoundButtons();
         this.setupSendingFunctionality();
@@ -170,5 +199,21 @@ public class MainActivity extends AppCompatActivity
 
         // Logs 'install' and 'app activate' App Events.
         AppEventsLogger.activateApp(this);
+    }
+
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }
