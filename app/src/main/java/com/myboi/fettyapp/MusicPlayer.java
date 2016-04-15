@@ -4,6 +4,7 @@ package com.myboi.fettyapp;
  * Created by divy9677 on 3/27/16.
  */
 
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -22,7 +23,7 @@ import android.app.Activity;
 public class MusicPlayer extends MediaPlayer implements OnPreparedListener,
         OnCompletionListener {
     // ~ Fields ................................................................
-    private Activity screen;
+    private Context screen;
     private boolean paused;
     private boolean enabled;
 
@@ -33,7 +34,7 @@ public class MusicPlayer extends MediaPlayer implements OnPreparedListener,
      *
      * @param appScreen is the GameScreen upon which Music should be played.
      */
-    public MusicPlayer(Activity appScreen) {
+    public MusicPlayer(Context appScreen) {
         screen = appScreen;
         paused = false;
         this.setOnPreparedListener(this);

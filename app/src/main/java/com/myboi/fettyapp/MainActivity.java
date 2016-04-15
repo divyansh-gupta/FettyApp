@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         GCMClientManager pushClientManager  = new GCMClientManager(this, PROJECT_NUMER);
         pushClientManager.registerIfNeeded(new GCMClientManager.RegistrationCompletedHandler(){
@@ -78,7 +78,8 @@ public class MainActivity extends AppCompatActivity
         });
 
         this.addAllSoundButtons();
-        this.setupSendingFunctionality();
+//        this.setupSendingFunctionality();
+
     }
 
     private void addAllSoundButtons() {
@@ -94,9 +95,11 @@ public class MainActivity extends AppCompatActivity
             fettyButton.setOnClickListener(new CompositeOnClickListener(soundButtons.add(fettyButton), new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    ToggleButton clicked = (ToggleButton) v;
+                    if(!clicked.isChecked()) return;
                     FettyNoise fettyNoise = new FettyNoise(name);
                     if (bar != null && bar.isShownOrQueued()) {
-                        messageButtonClicked( ((ToggleButton) v).getText().toString());
+                        messageButtonClicked(clicked.getText().toString());
                         return;
                     }
                     if (!player.isPlaying()) {
@@ -108,21 +111,21 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setupSendingFunctionality() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        assert fab != null;
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (soundButtons.getCheckedButton() == null) {
-                    bar = Snackbar.make(view, "Select a beat to send!", Snackbar.LENGTH_INDEFINITE);
-                    bar.setAction("Action", null).show();
-                    return;
-                }
-                messageButtonClicked(soundButtons.getCheckedButton().getText().toString());
-            }
-        });
-    }
+//    private void setupSendingFunctionality() {
+//
+//        assert fab != null;
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (soundButtons.getCheckedButton() == null) {
+//                    bar = Snackbar.make(view, "Select a beat to send!", Snackbar.LENGTH_INDEFINITE);
+//                    bar.setAction("Action", null).show();
+//                    return;
+//                }
+//                messageButtonClicked(soundButtons.getCheckedButton().getText().toString());
+//            }
+//        });
+//    }
 
     private void messageButtonClicked(String fettyNoise) {
         Uri uri = Uri.parse("android.resource://" + this.getPackageName() + "/raw/" + fettyNoise);

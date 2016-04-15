@@ -2,6 +2,7 @@ package com.myboi.fettyapp;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -22,26 +23,33 @@ public class GcmMessageHandler extends GcmListenerService {
     @Override
     public void onMessageReceived(String from, Bundle data){
         String message = data.getString("message");
-        Uri uri = Uri.parse("android.resource://" + this.getPackageName() + "/raw/" + message);
-        MediaPlayer mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        try {
-            mediaPlayer.setDataSource(getApplicationContext(), uri);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        final MusicPlayer musicPlayer = new MusicPlayer(getApplication().getApplicationContext());
+        musicPlayer.findAndPlaySong(new FettyNoise(message));
         Log.d("message received", message);
-        createNotification(from, message);
+        createNotification(message);
     }
 
-    private void createNotification(String title, String body){
+    private void createNotification(String body){
+        final Intent intent = new Intent();
         Context ctx = getBaseContext();
+        String bodyText = "";
+        if (body.equals("aye_long")){
+            bodyText = "Aaaayyyeeee";
+        }
+        else if(body.equals("aye_short")){
+            bodyText = "Aye";
+        }
+        else if(body.equals("squaw")){
+            bodyText = "SQUUAAWW";
+        }
+        else if (body.equals("seventeen")){
+            bodyText = "1738";
+        }
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ctx)
-                                                .setContentTitle(title)
-                                                .setContentText(body);
-
+                                                .setSmallIcon(R.drawable.messenger_bubble_small_white)
+                                                .setContentTitle("Oooh Baby ;) FettyGram")
+                                                .setContentText(bodyText);
+        mBuilder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
         NotificationManager mNotificationManager = (NotificationManager) ctx
                 .getSystemService(Context.NOTIFICATION_SERVICE);
 
