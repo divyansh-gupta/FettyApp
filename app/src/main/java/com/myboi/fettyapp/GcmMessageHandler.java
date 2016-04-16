@@ -46,7 +46,7 @@ public class GcmMessageHandler extends GcmListenerService {
             bodyText = "1738";
         }
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(ctx)
-                                                .setSmallIcon(R.drawable.messenger_bubble_small_white)
+                                                .setSmallIcon(R.mipmap.ic_fg)
                                                 .setContentTitle("Oooh Baby ;) FettyGram")
                                                 .setContentText(bodyText);
         mBuilder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });

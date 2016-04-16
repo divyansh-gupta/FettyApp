@@ -1,10 +1,11 @@
 package com.myboi.fettyapp;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
@@ -17,12 +18,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
+import com.github.clans.fab.FloatingActionButton;
+import com.github.clans.fab.FloatingActionMenu;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -38,11 +42,12 @@ public class MainActivity extends AppCompatActivity
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private static final String TAG = "MainActivity";
     String PROJECT_NUMER = "";
-
     private ToggleButtonGroup soundButtons;
     private MusicPlayer player;
     private Snackbar bar;
     private Context context = this;
+    private FloatingActionButton fab1;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,24 +66,25 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        FloatingActionMenu fab_menu = (FloatingActionMenu) findViewById(R.id.fab_menu);
 
         GCMClientManager pushClientManager  = new GCMClientManager(this, PROJECT_NUMER);
-        pushClientManager.registerIfNeeded(new GCMClientManager.RegistrationCompletedHandler(){
+        pushClientManager.registerIfNeeded(new GCMClientManager.RegistrationCompletedHandler() {
             @Override
             public void onSuccess(String registratoinId, boolean isNewRegistration) {
                 Log.d("RegId", registratoinId);
             }
 
             @Override
-            public void onFailure(String ex){
+            public void onFailure(String ex) {
                 super.onFailure(ex);
             }
 
         });
 
         this.addAllSoundButtons();
-//        this.setupSendingFunctionality();
+        this.setupSendingFunctionality();
 
     }
 
@@ -88,10 +94,23 @@ public class MainActivity extends AppCompatActivity
         LinearLayout rL = (LinearLayout) findViewById(R.id.programLayout);
         String[] allSongs = getResources().getStringArray(R.array.fettyNoises);
         for (final String name : allSongs) {
+            String buttonText = "";
+            if (name.equals("aye_long")){
+                buttonText = "Aaaayyyeeee";
+            }
+            else if(name.equals("aye_short")){
+                buttonText = "Aye";
+            }
+            else if(name.equals("squaw")){
+                buttonText = "SQUUAAWW";
+            }
+            else if (name.equals("seventeen")){
+                buttonText = "1738";
+            }
             ToggleButton fettyButton = (ToggleButton) View.inflate(this.getApplication(), R.layout.sound_buttons, null);
-            fettyButton.setText(name);
-            fettyButton.setTextOn(name);
-            fettyButton.setTextOff(name);
+            fettyButton.setText(buttonText);
+            fettyButton.setTextOn(buttonText);
+            fettyButton.setTextOff(buttonText);
             fettyButton.setOnClickListener(new CompositeOnClickListener(soundButtons.add(fettyButton), new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -111,22 +130,30 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-//    private void setupSendingFunctionality() {
-//
-//        assert fab != null;
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (soundButtons.getCheckedButton() == null) {
-//                    bar = Snackbar.make(view, "Select a beat to send!", Snackbar.LENGTH_INDEFINITE);
-//                    bar.setAction("Action", null).show();
-//                    return;
-//                }
-//                messageButtonClicked(soundButtons.getCheckedButton().getText().toString());
-//            }
-//        });
-//    }
+    private void setupSendingFunctionality() {
+        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (soundButtons.getCheckedButton() == null) {
+                    bar = Snackbar.make(view, "Select a beat to send!", Snackbar.LENGTH_INDEFINITE);
+                    bar.setAction("Action", null).show();
+                    return;
+                }
+                messageButtonClicked(soundButtons.getCheckedButton().getText().toString());
+            }
+        });
 
+        fab.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                Toast.makeText(getApplicationContext(), "Function not implemented yet",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
     private void messageButtonClicked(String fettyNoise) {
         Uri uri = Uri.parse("android.resource://" + this.getPackageName() + "/raw/" + fettyNoise);
         ShareToMessengerParams shareToMessengerParams =

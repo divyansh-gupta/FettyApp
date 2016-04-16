@@ -34,7 +34,8 @@
             android:id="@+id/programLayout"
             android:layout_below="@+id/textView2"
             android:layout_alignParentEnd="false"
-            android:weightSum="1">
+            android:weightSum="1"
+            android:layout_toStartOf="@id/fab_menu">
         </LinearLayout>
 
 </RelativeLayout>
